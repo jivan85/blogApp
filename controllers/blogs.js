@@ -38,7 +38,7 @@ blogsRouter.post('/', async (request, response, next) => {
   })
   try {
     const savedBlog = await blog.save()
-    user.notes = user.notes.concat(savedNote._id)
+    user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
     response.json(savedBlog)
   }
@@ -60,18 +60,20 @@ blogsRouter.delete('/:id', async (request, response, next) => {
 
 blogsRouter.put('/:id', async (request, response, next) => {
   const body = request.body
-
-  const blog = new Blog({
+  const blog = {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes
-  })
+    likes: body.likes,
+    user: body.user,
+  }
+  console.log(`Server put request BODY: ${JSON.stringify(blog)} ID ${request.params.id}`)
   try {
     const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
     response.json(updatedBlog)
   }
   catch (error) {
+    console.log(`Error inside blogserver ${error}` )
     next(error)
   }
 })
